@@ -26,6 +26,8 @@ const getAccessToken = async () => {
 
 // Function to get recommendations from Spotify
 const getRecommendations = async (accessToken, params) => {
+    console.log(accessToken);
+    console.log(params);
   try {
     const response = await axios.get("https://api.spotify.com/v1/recommendations", {
       headers: {
@@ -51,8 +53,13 @@ export default async (req, res) => {
 
     // Extract the parameters from the request
     const params = {
-      limit: req.query.limit || 20,
-      // Add other query parameters here
+        limit: req.query.limit || 20,
+        // Add other query parameters here
+        target_energy: req.query.target_energy || 0.5,
+        target_danceability: req.query.target_danceability || 0.5,
+        // seed_artists: req.query.seed_artists || "4NHQUGzhtTLFvgF5SZesLK",
+        seed_genres: req.query.seed_genres || "classical,country",
+        // seed_tracks: req.query.seed_tracks || "0c6xIDDpzE81m2q797ordA"
     };
 
     const recommendations = await getRecommendations(accessToken, params);

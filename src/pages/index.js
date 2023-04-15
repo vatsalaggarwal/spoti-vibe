@@ -73,12 +73,18 @@ const Index = () => {
         <Typography variant="h6">Target Danceability</Typography>
         <Slider
           value={targetDanceability}
+          min={0}
+          max={1}
+          step={0.01}
           onChange={(e, value) => setTargetDanceability(value)}
         />
 
         <Typography variant="h6">Target Energy</Typography>
         <Slider
           value={targetEnergy}
+          min={0}
+          max={1}
+          step={0.01}
           onChange={(e, value) => setTargetEnergy(value)}
         />
 
