@@ -112,6 +112,8 @@ def query_chain_with_text(query_text: str, k: int = 5) -> List[Song]:
         # TODO: replace with embeddings as we already have them.
         query_text = res["documents"][0][1]
 
+    # TODO: generate spotify playlists
+
     return songs
 
 
