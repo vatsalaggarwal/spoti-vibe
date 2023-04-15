@@ -1,0 +1,18 @@
+{
+    "schema_version": "v1",
+    "name_for_human": "Book to Vibes Plugin",
+    "name_for_model": "todo",
+    "description_for_human": "A plugin that allows the user to search for similar songs given text description.",
+    "description_for_model": "A plugin that allows the user to search for similar songs given text description.",
+    "auth": {
+        "type": "none"
+    },
+    "api": {
+        "type": "openapi",
+        "url": "https://40db-157-131-48-34.ngrok.io/.well-known/openapi.yaml",
+        "is_user_authenticated": false
+    },
+    "logo_url": "http://localhost:3333/logo.png",
+    "contact_email": "support@example.com",
+    "legal_info_url": "http://www.example.com/legal"
+}

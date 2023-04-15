@@ -1,0 +1,119 @@
+---
+openapi: 3.0.2
+info:
+  title: Spotify vibes Plugin
+  description: A plugin that allows the user to search for similar songs given text description.
+  version: 0.1.0
+paths:
+  "/search/{query_text}":
+    get:
+      summary: Given a search query, find similar songs
+      operationId: search_songs_search__query_text__get
+      parameters:
+      - required: true
+        schema:
+          title: Query Text
+          type: string
+        name: query_text
+        in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Search Songs Search  Query Text  Get
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Song"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+  "/search_chain/{query_text}":
+    get:
+      summary: Given a search query, find a chain of similar songs
+      operationId: search_songs_chain_search_chain__query_text__get
+      parameters:
+      - required: true
+        schema:
+          title: Query Text
+          type: string
+        name: query_text
+        in: path
+        description: The text describing the song's vibe.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                title: Response Search Songs Chain Search Chain  Query Text  Get
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Song"
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+components:
+  schemas:
+    HTTPValidationError:
+      title: HTTPValidationError
+      type: object
+      properties:
+        detail:
+          title: Detail
+          type: array
+          items:
+            "$ref": "#/components/schemas/ValidationError"
+    Song:
+      title: Song
+      required:
+      - title
+      - artist
+      - youtube_url
+      - youtube_embed_code
+      type: object
+      properties:
+        title:
+          title: Title
+          type: string
+          description: Title of the song.
+        artist:
+          title: Artist
+          type: string
+          description: Artist of the song.
+        youtube_url:
+          title: Youtube Url
+          type: string
+          description: YouTube URL for the song.
+        youtube_embed_code:
+          title: Youtube Embed Code
+          type: string
+          description: YouTube embed code for the song.
+    ValidationError:
+      title: ValidationError
+      required:
+      - loc
+      - msg
+      - type
+      type: object
+      properties:
+        loc:
+          title: Location
+          type: array
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
