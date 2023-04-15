@@ -103,14 +103,13 @@ def query_chain_with_text(query_text: str, k: int = 5) -> List[Song]:
     songs.append(song)
     query_text = res["documents"][0][0]
 
-    num_songs_to_go = k - 1
-
-    while num_songs_to_go > 0:
+    for _ in range(k - 1):
         res = collection.query(query_texts=[query_text], n_results=2)
 
         # Get second element in vector-db as first element with queried element due to 0 distance.
         song = _get_song(res["metadatas"][0][1])
         songs.append(song)
+        # TODO: replace with embeddings as we already have them.
         query_text = res["documents"][0][1]
 
     return songs
