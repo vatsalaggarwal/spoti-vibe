@@ -70,7 +70,7 @@ def get_youtube_url(song_title, artist):
         return "No results found", "No embed code found"
 
 
-def _get_song(m: dict, use_youtube=True) -> Song:
+def _get_song(m: dict, use_youtube=False) -> Song:
     if use_youtube:
         url, embed = get_youtube_url(m["title"], m["artist"])
     else:
