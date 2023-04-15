@@ -2,17 +2,13 @@
 from typing import List
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
-from gateway import (Song, init, query_chain_with_text, query_with_embedding,
-                     query_with_text)
+from gateway import Song, init, query_chain_with_text, query_with_text
 
 app = FastAPI()
-init("chroma_db/")
-
-
-@app.post("/recommendations/")
-async def get_recommendations(embedding: List[float]) -> List[Song]:
-    return query_with_embedding(embedding)
+app.mount("/.well-known", StaticFiles(directory="static"), name=".well-known")
+init("my_chrome_db/")
 
 
 @app.get("/search/{query_text}")
