@@ -3,6 +3,14 @@ import chromadb
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from chromadb.config import Settings
+from pydantic import BaseModel
+from typing import List
+
+class Song(BaseModel):
+    title: str
+    artist: str
+    youtube_url: str
+    youtube_embed_code: str
 
 YOUTUBE_API_KEY = 'AIzaSyCTEtqkIWKZzohXIQl9wwGP9xbqMrfHv9Y'
 SPOTIFY_CLIENT_ID = '85b26ec8abec40b5ac0f7f68151c55d4'
@@ -13,26 +21,12 @@ sp = None
 
 def init(chroma_dir):
     global chroma_client
-    chroma_client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet",
-    persist_directory=chroma_dir))
+    chroma_client = chromadb.Client(Settings(chroma_db_impl="duckdb+parquet", persist_directory=chroma_dir))
     auth_manager = SpotifyClientCredentials(client_id=SPOTIFY_CLIENT_ID, client_secret=SPOTIFY_CLIENT_SECRET)
+    global sp
     sp = spotipy.Spotify(auth_manager=auth_manager)
     # return chroma_client, sp
 
-def query_chromadb(query_text, k=1):
-    collection = chroma_client.get_collection(name="lyrics")
-    results = collection.query(
-        query_texts=[query_text],
-        n_results=k,
-    )
-    metadatas = []
-
-    for metadata in results['metadatas'][0]:
-        title = metadata['title']
-        artist = metadata['artist']
-        metadatas.append((title, artist))
-
-    return results, metadatas
 
 def get_track_artist_from_spotify(title, artist):
     if title and artist:
@@ -66,6 +60,23 @@ def get_youtube_url(song_title, artist):
     else:
         return "No results found", "No embed code found"
 
+def _get_song(m: dict, use_youtube=True) -> Song:
+    if use_youtube:
+        url, embed = get_youtube_url(m['title'], m['artist'])
+    else:
+        url, embed = get_track_artist_from_spotify(m['title'], m['artist'])
+    return Song(title=m['title'], artist=m['artist'], youtube_url=url, youtube_embed_code=embed)
+
+def query_with_embedding(embedding: List[float], k: int = 5) -> List[Song]:
+    collection = chroma_client.get_collection('lyrics')
+    res = collection.query(query_embeddings=[embedding], n_results=k)
+    return [_get_song(m) for m in res['metadatas'][0]]
+
+def query_with_text(query_text: str, k: int = 5) -> List[Song]:
+    collection = chroma_client.get_collection('lyrics')
+    res = collection.query(query_texts=[query_text], n_results=k)
+    return [_get_song(m) for m in res['metadatas'][0]]
+
 # song_title = "Bohemian Rhapsody"
 # artist = "Queen"
 
@@ -78,6 +89,6 @@ def get_youtube_url(song_title, artist):
 if __name__ == "__main__":
 
     init(chroma_dir="/Users/rajatbansal/Documents/git/spoti-vibe/storage")
-    results, metadatas = query_chromadb("This is a sad song.", k=2)
+    results, metadatas = query_with_text("This is a sad song.", k=2)
     print(results)
     print(metadatas)
